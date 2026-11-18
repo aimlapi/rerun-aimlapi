@@ -58,6 +58,30 @@ describe('parseModelList', () => {
         ])
         expect(parseModelList('garbage')).toEqual([])
     })
+
+    it('keeps only the chat completions rows of a gateway that names the API of each row', () => {
+        const listing = {
+            data: [
+                { id: 'klingai/image-v4-text-to-image', type: 'openai/image-generations' },
+                { id: 'openai/gpt-6.2-sol', type: 'anthropic/messages', info: { contextLength: 1_050_000 } },
+                { id: 'openai/gpt-6.2-sol', type: 'openai/chat-completions', info: { contextLength: 1_050_000 } },
+                { id: 'heygen/avatar-6', type: 'internal/video-generations/submit' },
+                { id: 'mistralai/mistral-small', type: 'openai/chat-completions', info: { contextLength: 32_000 } },
+                { id: 'openai/text-embedding-3-small', type: 'openai/embeddings' },
+            ],
+        }
+        expect(parseModelList(listing)).toEqual([
+            { id: 'openai/gpt-6.2-sol', contextWindow: 1_050_000 },
+            { id: 'mistralai/mistral-small', contextWindow: 32_000 },
+        ])
+    })
+
+    it('leaves a row in when its type is a bare word, as Together lists them', () => {
+        expect(parseModelList([{ id: 'meta-llama/Llama-3.3-70B', type: 'chat', context_length: 131_072 }, { id: 'black-forest-labs/FLUX.1', type: 'image' }])).toEqual([
+            { id: 'meta-llama/Llama-3.3-70B', contextWindow: 131_072 },
+            { id: 'black-forest-labs/FLUX.1', contextWindow: null },
+        ])
+    })
 })
 
 describe('candidateBaseUrls', () => {

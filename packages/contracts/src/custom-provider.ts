@@ -16,6 +16,7 @@ export const CUSTOM_PRESETS = [
     { id: 'together', label: 'Together', baseUrl: 'https://api.together.xyz/v1', keyRequired: true, local: false },
     { id: 'mistral', label: 'Mistral', baseUrl: 'https://api.mistral.ai/v1', keyRequired: true, local: false },
     { id: 'deepseek', label: 'DeepSeek', baseUrl: 'https://api.deepseek.com/v1', keyRequired: true, local: false },
+    { id: 'aimlapi', label: 'AI/ML API', baseUrl: 'https://api.aimlapi.com/v1', keyRequired: true, local: false },
 ] as const
 export type CustomPreset = (typeof CUSTOM_PRESETS)[number]
 

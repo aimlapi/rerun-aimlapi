@@ -11,8 +11,8 @@ const result = (problem: Parameters<typeof probeProblemMessage>[1]['problem'], d
 
 describe('presetsFor', () => {
     it('keeps the servers that listen on the owner machine off Rerun Cloud', () => {
-        expect(presetsFor(true).map(preset => preset.id)).toEqual(['groq', 'together', 'mistral', 'deepseek'])
-        expect(presetsFor(false).map(preset => preset.id)).toEqual(['ollama', 'lmstudio', 'vllm', 'litellm', 'groq', 'together', 'mistral', 'deepseek'])
+        expect(presetsFor(true).map(preset => preset.id)).toEqual(['groq', 'together', 'mistral', 'deepseek', 'aimlapi'])
+        expect(presetsFor(false).map(preset => preset.id)).toEqual(['ollama', 'lmstudio', 'vllm', 'litellm', 'groq', 'together', 'mistral', 'deepseek', 'aimlapi'])
     })
 })
 

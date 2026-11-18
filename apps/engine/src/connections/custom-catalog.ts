@@ -22,6 +22,13 @@ function positiveNumber(value: unknown): number | null {
     return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : null
 }
 
+// A gateway that serves every kind of model names the API of each row as `<format>/<endpoint>`
+// (`openai/chat-completions`, `openai/image-generations`): only the chat completions rows can run
+// here. A bare word (Together's `chat`, `image`) names no API, so it keeps the row.
+function isChatCompletionsRow(type: unknown): boolean {
+    return typeof type !== 'string' || !type.includes('/') || type.endsWith('/chat-completions')
+}
+
 // The OpenAI shape is `{ data: [{ id }] }`; a few servers answer the bare array. The window comes
 // under whichever name the server family uses, and most say nothing.
 export function parseModelList(body: unknown): DiscoveredModel[] {
@@ -30,8 +37,10 @@ export function parseModelList(body: unknown): DiscoveredModel[] {
     for (const row of rows) {
         const entry = row as Record<string, unknown> | null
         const id = typeof entry?.id === 'string' ? entry.id.trim() : ''
-        if (!id || models.some(model => model.id === id)) continue
-        const contextWindow = positiveNumber(entry?.context_length) ?? positiveNumber(entry?.max_model_len) ?? positiveNumber(entry?.context_window) ?? positiveNumber(entry?.max_context_length)
+        if (!id || !isChatCompletionsRow(entry?.type) || models.some(model => model.id === id)) continue
+        const info = entry?.info as Record<string, unknown> | undefined
+        const contextWindow =
+            positiveNumber(entry?.context_length) ?? positiveNumber(entry?.max_model_len) ?? positiveNumber(entry?.context_window) ?? positiveNumber(entry?.max_context_length) ?? positiveNumber(info?.contextLength)
         models.push({ id, contextWindow })
     }
     return models
